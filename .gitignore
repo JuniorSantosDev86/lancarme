@@ -1,7 +1,6 @@
 # Dependencies
 node_modules/
 target/
-.mvn/wrapper/maven-wrapper.jar
 
 # Environment
 .env
@@ -37,3 +36,8 @@ redis-data/
 *.pem
 *.key
 *.crt
+
+# Agent security
+.agents/*
+!.agents/skills/
+!.agents/skills/**

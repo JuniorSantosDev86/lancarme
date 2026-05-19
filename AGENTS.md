@@ -207,3 +207,8 @@ Um bloco só está pronto quando:
 - não cria dívida invisível;
 - documentação foi atualizada;
 - relatório final explica o que mudou, como foi validado e quais riscos permanecem.
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
