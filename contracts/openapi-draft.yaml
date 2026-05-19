@@ -1,0 +1,83 @@
+openapi: 3.0.3
+info:
+  title: Lançar.me API
+  version: 0.1.0
+  description: Draft inicial da API REST do Lançar.me.
+servers:
+  - url: https://api.lancar.me/api/v1
+paths:
+  /health:
+    get:
+      summary: Healthcheck da API
+      responses:
+        '200':
+          description: API saudável
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /auth/register:
+    post:
+      summary: Registrar usuário e criar workspace padrão
+      responses:
+        '201': { description: Criado }
+  /auth/login:
+    post:
+      summary: Login
+      responses:
+        '200': { description: Autenticado }
+  /workspaces/current:
+    get:
+      summary: Obter workspace atual
+      security:
+        - bearerAuth: []
+      responses:
+        '200': { description: Workspace atual }
+  /products:
+    get:
+      summary: Listar produtos do workspace
+      security:
+        - bearerAuth: []
+      responses:
+        '200': { description: Lista de produtos }
+    post:
+      summary: Criar produto
+      security:
+        - bearerAuth: []
+      responses:
+        '201': { description: Produto criado }
+  /ai/credits/balance:
+    get:
+      summary: Ver saldo de créditos de IA
+      security:
+        - bearerAuth: []
+      responses:
+        '200': { description: Saldo atual }
+  /ai/actions/generate-launch-plan:
+    post:
+      summary: Gerar plano de lançamento com IA
+      security:
+        - bearerAuth: []
+      responses:
+        '200': { description: Plano gerado }
+        '402': { description: Créditos insuficientes }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    HealthResponse:
+      type: object
+      required: [status, service, version]
+      properties:
+        status:
+          type: string
+          example: UP
+        service:
+          type: string
+          example: lancarme-api
+        version:
+          type: string
+          example: 0.1.0

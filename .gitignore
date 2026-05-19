@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Builds
+dist/
+build/
+coverage/
+
+# Java
+*.class
+*.jar
+*.war
+
+# Docker / local data
+docker-data/
+postgres-data/
+redis-data/
+
+# Secrets
+*.pem
+*.key
+*.crt
