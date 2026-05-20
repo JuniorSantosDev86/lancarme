@@ -1,0 +1,54 @@
+openapi: 3.0.3
+info:
+  title: Lancar.me Platform Foundation API
+  version: 0.1.0
+  description: Contract for the initial public healthcheck endpoint.
+servers:
+  - url: http://localhost:8080
+    description: Local backend
+paths:
+  /api/v1/health:
+    get:
+      summary: Check API operational status
+      description: Public endpoint used by local development and the initial frontend status screen. It must not expose private, tenant, billing, AI, file, infrastructure, or secret data.
+      operationId: getHealth
+      tags:
+        - Health
+      responses:
+        "200":
+          description: API is operational.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+              examples:
+                operational:
+                  value:
+                    status: UP
+                    service: lancarme-api
+                    version: 0.1.0
+        "500":
+          description: Unexpected server error. Response body must not expose stack traces or secrets.
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - status
+        - service
+        - version
+      properties:
+        status:
+          type: string
+          enum:
+            - UP
+          description: Operational status understood by the frontend.
+        service:
+          type: string
+          example: lancarme-api
+          description: Stable service identifier.
+        version:
+          type: string
+          example: 0.1.0
+          description: Application version exposed for local validation.
