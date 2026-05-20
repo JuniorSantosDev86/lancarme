@@ -2,142 +2,178 @@
 
 **Input**: Design documents from `/specs/001-platform-foundation/`
 
-**Prerequisites**: `plan.md`, `spec.md`, `research.md`, `data-model.md`, `contracts/healthcheck.openapi.yaml`, `quickstart.md`, `.specify/memory/constitution.md`, `AGENTS.md`
+**Prerequisites**: `plan.md`, `spec.md`, `research.md`, `data-model.md`, `contracts/healthcheck.openapi.yaml`, `quickstart.md`, `checklists/requirements.md`, `.specify/memory/constitution.md`, `AGENTS.md`
 
-**Tests**: Required for this block by FR-011, FR-012, constitution, and AGENTS.md.
+**Tests**: Required by FR-011, FR-012, constitution, AGENTS.md, and the Bloco 1 quality checklist.
 
-**Organization**: Tasks are grouped by setup, foundation, then user stories so each increment can be implemented and tested independently.
+**Organization**: Tasks are grouped by setup/infra, backend foundation, frontend foundation, then user stories. User story phases include tests before implementation where behavior is introduced. Documentation and validation tasks close the block.
 
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Can run in parallel because it touches different files and does not depend on an incomplete task
-- **[Story]**: Maps implementation tasks to user stories from `spec.md`
+- **[Story]**: Required only for user story phases and maps to `spec.md`
 - Every task includes expected file paths
 
-## Phase 1: Setup (Shared Infrastructure)
+## Phase 1: Setup & Infra (Shared Foundation)
 
-**Purpose**: Create the monorepo skeleton and shared project guardrails without application behavior.
+**Purpose**: Create the monorepo skeleton, local infrastructure, and safe environment templates without application behavior.
 
 - [ ] T001 Create root monorepo directories `lancarme-web/`, `lancarme-api/`, `docs/`, and keep `specs/` at repository root
-- [ ] T002 Create root `.gitignore` ignoring `.env`, `lancarme-api/target/`, `lancarme-web/node_modules/`, `lancarme-web/dist/`, and local IDE/build artifacts
-- [ ] T003 Create root `docker-compose.yml` with a PostgreSQL service named `postgres`, local-only port mapping, named volume, healthcheck, and safe placeholder environment values
-- [ ] T004 [P] Create backend environment template in `lancarme-api/.env.example` with `SPRING_PROFILES_ACTIVE`, `SERVER_PORT`, `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, and `APP_VERSION`
-- [ ] T005 [P] Create frontend environment template in `lancarme-web/.env.example` with `VITE_API_BASE_URL=http://localhost:8080/api/v1`
-- [ ] T006 Create initial root `README.md` sections for prerequisites, repository structure, environment files, database, backend, frontend, tests, build, and troubleshooting commands
+- [ ] T002 Create root `.gitignore` ignoring `.env`, `lancarme-api/target/`, `lancarme-web/node_modules/`, `lancarme-web/dist/`, coverage output, and local IDE/build artifacts
+- [ ] T003 Create root `docker-compose.yml` with PostgreSQL service `postgres`, local-only port mapping, named volume, healthcheck, and safe placeholder environment values
+- [ ] T004 [P] Create backend environment template in `lancarme-api/.env.example` with `SPRING_PROFILES_ACTIVE=local`, `SERVER_PORT=8080`, `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, and `APP_VERSION=0.1.0` using no real secrets
+- [ ] T005 [P] Create frontend environment template in `lancarme-web/.env.example` with `VITE_API_BASE_URL=http://localhost:8080/api/v1` and no private endpoints or secrets
+- [ ] T006 Create initial root `README.md` sections for prerequisites, repository structure, environment files, PostgreSQL, backend, frontend, tests, build, troubleshooting, Playwright future decision, and scope guard
+
+**Checkpoint**: Repository has safe local infrastructure and environment documentation placeholders.
 
 ---
 
-## Phase 2: Foundational (Blocking Prerequisites)
+## Phase 2: Backend Foundation (Blocking)
 
-**Purpose**: Establish backend and frontend project bases, configuration, and empty future module structure required before user story work.
+**Purpose**: Establish the Java 21/Spring Boot 3 backend base, configuration, Flyway, security surface, and package structure required before API behavior.
 
-**Critical**: No user story work can begin until this phase is complete.
+**Critical**: Complete this phase before backend user story behavior.
 
 - [ ] T007 Create Java 21 Spring Boot 3 Maven project files in `lancarme-api/pom.xml`, `lancarme-api/mvnw`, and `lancarme-api/mvnw.cmd`
 - [ ] T008 Configure backend dependencies in `lancarme-api/pom.xml` for Spring Web, Spring Security, Spring Data JPA, PostgreSQL driver, Flyway, Bean Validation, Spring Boot Test, JUnit 5, Mockito, and Testcontainers
 - [ ] T009 Create backend application entrypoint in `lancarme-api/src/main/java/br/com/lancarme/LancarmeApplication.java`
-- [ ] T010 Configure backend local settings in `lancarme-api/src/main/resources/application.yml` and `lancarme-api/src/main/resources/application-local.yml` using environment variables from `lancarme-api/.env.example`
-- [ ] T011 Configure Flyway with initial no-op foundation migration in `lancarme-api/src/main/resources/db/migration/V1__platform_foundation.sql`
-- [ ] T012 [P] Create backend shared package structure under `lancarme-api/src/main/java/br/com/lancarme/shared/` for `config`, `exception`, `response`, `security`, and `validation`
-- [ ] T013 [P] Create backend future domain package placeholders under `lancarme-api/src/main/java/br/com/lancarme/` for `auth`, `workspace`, `strategy`, `launch`, `contentmatrix`, `copyroom`, `creativeroom`, `trafficroom`, `funnelmap`, `calendarexecution`, `mentorflow`, `proofvault`, `analytics`, `ai`, and `billing`
-- [ ] T014 Create React TypeScript Vite project files in `lancarme-web/package.json`, `lancarme-web/index.html`, `lancarme-web/tsconfig.json`, `lancarme-web/tsconfig.node.json`, and `lancarme-web/vite.config.ts`
-- [ ] T015 Configure frontend scripts and dependencies in `lancarme-web/package.json` for `dev`, `build`, `lint`, `typecheck`, `test`, React, TypeScript, Vite, TanStack Query, Vitest, React Testing Library, jsdom, and Tailwind tooling
-- [ ] T016 Configure Tailwind in `lancarme-web/tailwind.config.ts`, `lancarme-web/postcss.config.js`, and `lancarme-web/src/app/index.css`
-- [ ] T017 [P] Create frontend source structure under `lancarme-web/src/` for `app`, `components/ui`, `components/layout`, `components/shared`, `hooks`, `services`, `schemas`, `tests`, `types`, and `modules`
-- [ ] T018 [P] Create frontend future module placeholders under `lancarme-web/src/modules/` for `strategy`, `launch`, `content-matrix`, `copy-room`, `creative-room`, `traffic-room`, `funnel-map`, `calendar-execution`, `mentor-flow`, `proof-vault`, `analytics`, `billing`, and `ai`
-- [ ] T019 Configure Vitest and React Testing Library setup in `lancarme-web/vitest.config.ts` and `lancarme-web/src/tests/setup.ts`
+- [ ] T010 Configure backend base settings in `lancarme-api/src/main/resources/application.yml` using environment variables for server port, app version, datasource, and Flyway
+- [ ] T011 Configure local profile settings in `lancarme-api/src/main/resources/application-local.yml` for local PostgreSQL and local CORS origin `http://localhost:5173`
+- [ ] T012 Configure Flyway with initial no-op foundation migration in `lancarme-api/src/main/resources/db/migration/V1__platform_foundation.sql`
+- [ ] T013 [P] Create backend shared package structure under `lancarme-api/src/main/java/br/com/lancarme/shared/` for `config`, `exception`, `response`, `security`, and `validation`
+- [ ] T014 [P] Create backend health package structure under `lancarme-api/src/main/java/br/com/lancarme/health/` for `controller` and `dto`
+- [ ] T015 [P] Create backend future domain package placeholders under `lancarme-api/src/main/java/br/com/lancarme/` for `auth`, `workspace`, `strategy`, `launch`, `contentmatrix`, `copyroom`, `creativeroom`, `trafficroom`, `funnelmap`, `calendarexecution`, `mentorflow`, `proofvault`, `analytics`, `ai`, and `billing`
+- [ ] T016 Create Spring Security foundation in `lancarme-api/src/main/java/br/com/lancarme/shared/security/SecurityConfig.java` prepared to permit only `GET /api/v1/health` publicly without implementing auth flows
+- [ ] T017 Create local CORS configuration in `lancarme-api/src/main/java/br/com/lancarme/shared/config/CorsConfig.java` allowing only `http://localhost:5173` for local `GET /api/v1/health` and no wildcard `*`
 
-**Checkpoint**: Foundation ready - user story implementation can now begin.
+**Checkpoint**: Backend base is ready for the healthcheck without auth, business modules, or sensitive public surface.
 
 ---
 
-## Phase 3: User Story 1 - Iniciar o ambiente base local (Priority: P1) MVP
+## Phase 3: Frontend Foundation (Blocking)
 
-**Goal**: A developer can start database, backend, and frontend locally using documented commands and safe example configuration.
+**Purpose**: Establish the React/TypeScript/Vite frontend base, Tailwind preparation, test harness, and folder structure required before the status screen.
 
-**Independent Test**: Follow `README.md` from a clean clone, copy both `.env.example` files to `.env`, start PostgreSQL, run the backend and frontend, and confirm no real secrets are required.
+**Critical**: Complete this phase before frontend user story behavior.
+
+- [ ] T018 Create React TypeScript Vite project files in `lancarme-web/package.json`, `lancarme-web/index.html`, `lancarme-web/tsconfig.json`, `lancarme-web/tsconfig.node.json`, and `lancarme-web/vite.config.ts`
+- [ ] T019 Configure frontend scripts and dependencies in `lancarme-web/package.json` for `dev`, `build`, `lint`, `typecheck`, `test`, React, TypeScript, Vite, TanStack Query, Vitest, React Testing Library, jsdom, and Tailwind tooling
+- [ ] T020 Ensure `lancarme-web/package.json` does not include Playwright dependencies, Playwright scripts, or E2E test setup in this block
+- [ ] T021 Configure Tailwind in `lancarme-web/tailwind.config.ts`, `lancarme-web/postcss.config.js`, and `lancarme-web/src/app/index.css`
+- [ ] T022 [P] Create frontend source structure under `lancarme-web/src/` for `app`, `components/ui`, `components/layout`, `components/shared`, `hooks`, `services`, `schemas`, `tests`, `types`, and `modules`
+- [ ] T023 [P] Create frontend future module placeholders under `lancarme-web/src/modules/` for `strategy`, `launch`, `content-matrix`, `copy-room`, `creative-room`, `traffic-room`, `funnel-map`, `calendar-execution`, `mentor-flow`, `proof-vault`, `analytics`, `billing`, and `ai`
+- [ ] T024 Configure Vitest and React Testing Library setup in `lancarme-web/vitest.config.ts` and `lancarme-web/src/tests/setup.ts`
+
+**Checkpoint**: Frontend base is ready for the technical status screen without dashboard or business module behavior.
+
+---
+
+## Phase 4: User Story 1 - Iniciar o ambiente base local (Priority: P1) MVP
+
+**Goal**: A developer can start PostgreSQL, backend, and frontend locally using documented commands and safe example configuration.
+
+**Independent Test**: Follow `README.md` from a clean clone, copy both `.env.example` files to `.env`, start PostgreSQL, run backend and frontend, and confirm no real secrets are required.
 
 ### Tests for User Story 1
 
-- [ ] T020 [P] [US1] Add backend application context test in `lancarme-api/src/test/java/br/com/lancarme/LancarmeApplicationTest.java`
-- [ ] T021 [P] [US1] Add Docker Compose validation instructions to `README.md` matching `docker compose config` and `docker compose up -d postgres`
-- [ ] T022 [P] [US1] Add frontend smoke render test in `lancarme-web/src/tests/App.test.tsx` for the initial app shell in PT-BR
+- [ ] T025 [P] [US1] Add backend application context test in `lancarme-api/src/test/java/br/com/lancarme/LancarmeApplicationTest.java`
+- [ ] T026 [P] [US1] Add frontend smoke render test for the PT-BR technical app shell in `lancarme-web/src/tests/App.test.tsx`
+- [ ] T027 [P] [US1] Add Docker Compose validation instructions to `README.md` matching root `docker compose config` and `docker compose up -d postgres`
 
 ### Implementation for User Story 1
 
-- [ ] T023 [US1] Wire Spring Boot local datasource and Flyway startup using PostgreSQL env variables in `lancarme-api/src/main/resources/application-local.yml`
-- [ ] T024 [US1] Create frontend entrypoint in `lancarme-web/src/app/main.tsx` with React root and TanStack Query provider
-- [ ] T025 [US1] Create initial frontend app shell in `lancarme-web/src/app/App.tsx` with PT-BR product/status copy and no dashboard or business module behavior
-- [ ] T026 [US1] Update `README.md` with exact local setup commands for `docker compose up -d postgres`, `cd lancarme-api && cp .env.example .env && ./mvnw spring-boot:run`, and `cd lancarme-web && cp .env.example .env && npm install && npm run dev`
-- [ ] T027 [US1] Document safe placeholder policy for `.env.example` and ignored `.env` files in `README.md`
+- [ ] T028 [US1] Wire Spring Boot local datasource and Flyway startup using PostgreSQL env variables in `lancarme-api/src/main/resources/application-local.yml`
+- [ ] T029 [US1] Create frontend entrypoint in `lancarme-web/src/app/main.tsx` with React root and TanStack Query provider
+- [ ] T030 [US1] Create initial frontend app shell in `lancarme-web/src/app/App.tsx` with PT-BR technical status copy and no dashboard or business module behavior
+- [ ] T031 [US1] Update `README.md` with exact setup commands for `docker compose up -d postgres`, `cd lancarme-api && cp .env.example .env && ./mvnw spring-boot:run`, and `cd lancarme-web && cp .env.example .env && npm install && npm run dev`
+- [ ] T032 [US1] Document `.env.example` placeholder policy and ignored `.env` files in `README.md`, ensuring no task asks for real secrets in `lancarme-api/.env.example` or `lancarme-web/.env.example`
+- [ ] T033 [US1] Update `specs/001-platform-foundation/quickstart.md` only if implemented command names differ from documented scripts, keeping README and quickstart consistent
 
 **Checkpoint**: User Story 1 is independently testable as a local runnable base.
 
 ---
 
-## Phase 4: User Story 2 - Validar comunicacao entre web e API (Priority: P2)
+## Phase 5: User Story 2 - Validar comunicacao entre web e API (Priority: P2)
 
 **Goal**: The initial web screen calls `GET /api/v1/health` and shows loading, operational, and unavailable states in PT-BR.
 
-**Independent Test**: Start the API and web app, open the web app, and confirm it displays the health status; then stop the API and confirm a clear unavailable message without UI breakage.
+**Independent Test**: Start API and web app, open the web app, confirm it displays the health status, then stop the API and confirm a clear unavailable message without UI breakage.
 
 ### Tests for User Story 2
 
-- [ ] T028 [P] [US2] Add backend MockMvc test for `GET /api/v1/health` response status and JSON body in `lancarme-api/src/test/java/br/com/lancarme/health/HealthControllerTest.java`
-- [ ] T029 [P] [US2] Add frontend health service tests for success and failure states in `lancarme-web/src/tests/healthService.test.ts`
-- [ ] T030 [P] [US2] Add frontend app tests for loading, success, and unavailable health states in `lancarme-web/src/tests/App.test.tsx`
+- [ ] T034 [US2] Add backend MockMvc test for `GET /api/v1/health` status and JSON body in `lancarme-api/src/test/java/br/com/lancarme/health/HealthControllerTest.java`
+- [ ] T035 [US2] Add backend test or assertion in `lancarme-api/src/test/java/br/com/lancarme/health/HealthControllerTest.java` proving the health response contains only `status`, `service`, and `version`
+- [ ] T036 [US2] Add backend MockMvc/WebMvcTest or equivalent controller/endpoint test in `lancarme-api/src/test/java/br/com/lancarme/health/HealthControllerTest.java` proving `GET /api/v1/health` does not start, require, or query PostgreSQL/DataSource, and asserting the response contains only `status`, `service`, and `version` with no database or infrastructure state
+- [ ] T037 [US2] Add backend CORS test in `lancarme-api/src/test/java/br/com/lancarme/health/HealthControllerTest.java` allowing origin `http://localhost:5173` for `GET /api/v1/health`
+- [ ] T038 [US2] Add backend CORS negative test in `lancarme-api/src/test/java/br/com/lancarme/health/HealthControllerTest.java` proving wildcard or an unapproved origin is not allowed
+- [ ] T039 [P] [US2] Add frontend health service tests for success, invalid response, timeout/network failure, and unavailable states in `lancarme-web/src/tests/healthService.test.ts`
+- [ ] T040 [P] [US2] Add frontend app tests for loading, operational, and unavailable health states in PT-BR in `lancarme-web/src/tests/App.test.tsx`
 
-### Implementation for User Story 2
+### Backend Implementation for User Story 2
 
-- [ ] T031 [P] [US2] Create health response DTO in `lancarme-api/src/main/java/br/com/lancarme/health/dto/HealthResponse.java` with `status`, `service`, and `version`
-- [ ] T032 [US2] Create public health controller in `lancarme-api/src/main/java/br/com/lancarme/health/controller/HealthController.java` for `GET /api/v1/health`
-- [ ] T033 [US2] Configure Spring Security to permit `GET /api/v1/health` without implementing auth flows in `lancarme-api/src/main/java/br/com/lancarme/shared/security/SecurityConfig.java`
-- [ ] T034 [P] [US2] Create frontend health type in `lancarme-web/src/types/health.ts` matching `specs/001-platform-foundation/contracts/healthcheck.openapi.yaml`
-- [ ] T035 [P] [US2] Create base API client in `lancarme-web/src/services/apiClient.ts` using `VITE_API_BASE_URL` and timeout/error handling
-- [ ] T036 [US2] Create health service in `lancarme-web/src/services/healthService.ts` to call `/health` and validate the minimal response shape
-- [ ] T037 [US2] Create `useHealthStatus` hook in `lancarme-web/src/hooks/useHealthStatus.ts` using TanStack Query for loading, success, refetch, and error states
-- [ ] T038 [US2] Update `lancarme-web/src/app/App.tsx` to render API loading, operational, and unavailable states in PT-BR without exposing technical stack traces
-- [ ] T039 [US2] Update `README.md` with manual healthcheck validation using `curl http://localhost:8080/api/v1/health` and expected JSON response
+- [ ] T041 [P] [US2] Create health response DTO in `lancarme-api/src/main/java/br/com/lancarme/health/dto/HealthResponse.java` with only `status`, `service`, and `version`
+- [ ] T042 [US2] Create public health controller in `lancarme-api/src/main/java/br/com/lancarme/health/controller/HealthController.java` for `GET /api/v1/health` returning the minimal DTO
+- [ ] T043 [US2] Ensure `HealthController` in `lancarme-api/src/main/java/br/com/lancarme/health/controller/HealthController.java` does not inject datasource, repositories, Flyway, entity managers, or PostgreSQL health indicators
+- [ ] T044 [US2] Ensure `SecurityConfig` in `lancarme-api/src/main/java/br/com/lancarme/shared/security/SecurityConfig.java` permits `GET /api/v1/health` publicly without creating login, JWT, roles, or workspace authorization
+- [ ] T045 [US2] Ensure local CORS configuration in `lancarme-api/src/main/java/br/com/lancarme/shared/config/CorsConfig.java` allows only `http://localhost:5173` and never `*`
 
-**Checkpoint**: User Story 2 proves the first web/API contract end to end.
+### Frontend Implementation for User Story 2
+
+- [ ] T046 [P] [US2] Create frontend health type in `lancarme-web/src/types/health.ts` matching `specs/001-platform-foundation/contracts/healthcheck.openapi.yaml`
+- [ ] T047 [P] [US2] Create base API client in `lancarme-web/src/services/apiClient.ts` using `VITE_API_BASE_URL` with timeout and sanitized error handling
+- [ ] T048 [US2] Create health service in `lancarme-web/src/services/healthService.ts` to call `/health` and validate the minimal response shape without exposing technical stack traces
+- [ ] T049 [US2] Create `useHealthStatus` hook in `lancarme-web/src/hooks/useHealthStatus.ts` using TanStack Query for loading, success, refetch, and error states
+- [ ] T050 [US2] Update `lancarme-web/src/app/App.tsx` to render API loading, operational, and unavailable states in PT-BR with no dashboard or business module UI
+
+### Documentation for User Story 2
+
+- [ ] T051 [US2] Update `README.md` with manual healthcheck validation using `curl http://localhost:8080/api/v1/health`, expected JSON, and explicit note that it is liveness only
+- [ ] T052 [US2] Update `README.md` troubleshooting so PostgreSQL startup/Flyway issues are documented separately from `GET /api/v1/health`
+- [ ] T053 [US2] Update `README.md` with local CORS expectations for `http://localhost:5173` and explicit prohibition of CORS wildcard `*`
+
+**Checkpoint**: User Story 2 proves the first typed web/API contract, CORS guard, and liveness semantics.
 
 ---
 
-## Phase 5: User Story 3 - Proteger o escopo da fundacao (Priority: P3)
+## Phase 6: User Story 3 - Proteger o escopo da fundacao (Priority: P3)
 
-**Goal**: Keep the foundation small and prepared for future modules without implementing auth, billing, real AI, upload, dashboard, or product modules.
+**Goal**: Keep the foundation small and prepared for future modules without auth, billing, real AI, upload, dashboard, or product modules.
 
-**Independent Test**: Inspect the repository structure, endpoints, and UI and confirm only foundation, healthcheck, configuration, tests, and documentation exist.
+**Independent Test**: Inspect repository structure, endpoints, dependencies, scripts, and UI and confirm only foundation, healthcheck, configuration, tests, and documentation exist.
 
-### Tests for User Story 3
+### Tests and Scope Guards for User Story 3
 
-- [ ] T040 [P] [US3] Add scope guard checklist to `README.md` confirming no auth flow, billing, real AI, upload, dashboard, or business module endpoint exists in this block
+- [ ] T054 [P] [US3] Add scope guard checklist to `README.md` confirming no auth flow, billing, real AI, upload, dashboard, payment, workspace, or business module endpoint exists in this block
+- [ ] T055 [US3] Add dependency scope note to `README.md` confirming Playwright is future-only and absent from `lancarme-web/package.json`
 
 ### Implementation for User Story 3
 
-- [ ] T041 [US3] Ensure backend future domain packages under `lancarme-api/src/main/java/br/com/lancarme/` contain no controllers, services, entities, repositories, or business rules beyond placeholders
-- [ ] T042 [US3] Ensure frontend future module directories under `lancarme-web/src/modules/` contain no routes, dashboard screens, API calls, or business rules beyond placeholders
-- [ ] T043 [US3] Document the current public surface in `README.md` as only `GET /api/v1/health` and the technical initial status screen
-- [ ] T044 [US3] Verify healthcheck contract minimization against `specs/001-platform-foundation/contracts/healthcheck.openapi.yaml`, ensuring no hostname, IP, datasource, workspace, user, secret, or environment details are returned
+- [ ] T056 [P] [US3] Ensure backend future domain packages under `lancarme-api/src/main/java/br/com/lancarme/` contain no controllers, services, entities, repositories, endpoints, migrations, or business rules beyond placeholders
+- [ ] T057 [P] [US3] Ensure frontend future module directories under `lancarme-web/src/modules/` contain no routes, dashboard screens, API calls, forms, analytics, or business rules beyond placeholders
+- [ ] T058 [US3] Document current public surface in `README.md` as only `GET /api/v1/health` and the technical PT-BR initial status screen
+- [ ] T059 [US3] Review `lancarme-api/pom.xml` and `lancarme-web/package.json` to ensure no auth provider, billing SDK, AI provider, upload/storage library, dashboard package, or Playwright dependency was added in this block
+- [ ] T060 [US3] Review `specs/001-platform-foundation/contracts/healthcheck.openapi.yaml` against `HealthResponse` implementation to ensure no hostname, IP, datasource, workspace, user, secret, environment, or infrastructure detail is returned
 
 **Checkpoint**: User Story 3 confirms scope control and future module preparation without premature product behavior.
 
 ---
 
-## Phase 6: Polish & Cross-Cutting Concerns
+## Phase 7: Documentation & Validation
 
-**Purpose**: Final documentation, validation, and implementation report tasks for the whole block.
+**Purpose**: Align documentation, run validations, and produce the final implementation report.
 
-- [ ] T045 [P] Update `README.md` with final repository tree matching `lancarme-web/`, `lancarme-api/`, `docs/`, `specs/`, `docker-compose.yml`, `AGENTS.md`, and `README.md`
-- [ ] T046 [P] Validate backend with `cd lancarme-api && ./mvnw test` and record result in the final implementation report
-- [ ] T047 [P] Validate backend with `cd lancarme-api && ./mvnw verify` and record result in the final implementation report
-- [ ] T048 [P] Validate frontend with `cd lancarme-web && npm run lint` and record result in the final implementation report
-- [ ] T049 [P] Validate frontend with `cd lancarme-web && npm run typecheck` and record result in the final implementation report
-- [ ] T050 [P] Validate frontend with `cd lancarme-web && npm run test` and record result in the final implementation report
-- [ ] T051 [P] Validate frontend with `cd lancarme-web && npm run build` and record result in the final implementation report
-- [ ] T052 [P] Validate integration configuration with `docker compose config` and record result in the final implementation report
-- [ ] T053 Validate quickstart end to end using `specs/001-platform-foundation/quickstart.md` and update `README.md` if any documented command differs from the implemented scripts
-- [ ] T054 Produce final implementation report with changed files, validations, scope exclusions, and remaining risks in the delivery response
+- [ ] T061 Update `README.md` with final repository tree matching `lancarme-web/`, `lancarme-api/`, `docs/`, `specs/`, `docker-compose.yml`, `AGENTS.md`, and `README.md`
+- [ ] T062 Align `README.md` and `specs/001-platform-foundation/quickstart.md` so prerequisites, env setup, PostgreSQL commands, backend commands, frontend commands, tests, build, healthcheck, CORS, Playwright future decision, and troubleshooting are consistent
+- [ ] T063 [P] Validate backend with `cd lancarme-api && ./mvnw test` and record result in the final implementation report
+- [ ] T064 [P] Validate backend with `cd lancarme-api && ./mvnw verify` and record result in the final implementation report
+- [ ] T065 [P] Validate frontend with `cd lancarme-web && npm run lint` and record result in the final implementation report
+- [ ] T066 [P] Validate frontend with `cd lancarme-web && npm run typecheck` and record result in the final implementation report
+- [ ] T067 [P] Validate frontend with `cd lancarme-web && npm run test` and record result in the final implementation report
+- [ ] T068 [P] Validate frontend with `cd lancarme-web && npm run build` and record result in the final implementation report
+- [ ] T069 [P] Validate integration configuration with root `docker compose config` and record result in the final implementation report
+- [ ] T070 Validate quickstart end to end using `specs/001-platform-foundation/quickstart.md` and update `README.md` or `quickstart.md` if any documented command differs from implemented scripts
+- [ ] T071 Produce final implementation report from `README.md` and validation results with changed files, scope exclusions, CORS result, healthcheck liveness result, Playwright exclusion, and remaining risks in the delivery response
 
 ---
 
@@ -145,45 +181,47 @@
 
 ### Phase Dependencies
 
-- **Setup (Phase 1)**: No dependencies - can start immediately.
-- **Foundational (Phase 2)**: Depends on Setup completion - blocks all user stories.
-- **User Story 1 (Phase 3)**: Depends on Foundational completion and is the MVP.
-- **User Story 2 (Phase 4)**: Depends on Foundational completion; practically follows US1 because it uses the app shell and documented local environment.
-- **User Story 3 (Phase 5)**: Depends on Foundational completion; best executed after US1 and US2 so scope can be inspected.
-- **Polish (Phase 6)**: Depends on selected user stories being complete.
+- **Setup & Infra (Phase 1)**: No dependencies - can start immediately.
+- **Backend Foundation (Phase 2)**: Depends on Phase 1 for `lancarme-api/` and env template.
+- **Frontend Foundation (Phase 3)**: Depends on Phase 1 for `lancarme-web/` and env template.
+- **US1 (Phase 4)**: Depends on Phases 2 and 3.
+- **US2 (Phase 5)**: Depends on Phases 2 and 3; should follow US1 in solo execution because it uses the app shell and local setup.
+- **US3 (Phase 6)**: Depends on Phases 2 and 3; final review should follow US1 and US2.
+- **Documentation & Validation (Phase 7)**: Depends on selected user stories being complete.
 
 ### User Story Dependencies
 
-- **US1 (P1)**: Can start after Phase 2; no dependency on US2 or US3.
-- **US2 (P2)**: Can start after Phase 2, but should follow US1 in this solo implementation because it integrates with the frontend shell and local backend.
-- **US3 (P3)**: Can start after Phase 2, but final verification depends on US1 and US2 implementation being complete.
+- **US1 (P1)**: First runnable MVP after foundation.
+- **US2 (P2)**: Integrates web/API contract after foundation and app shell.
+- **US3 (P3)**: Can start after foundation but final scope verification depends on US1 and US2 outputs.
 
 ### Within Each User Story
 
 - Write or adjust tests before implementing matching behavior.
 - Backend DTO before controller.
-- API client and type before health service.
+- Security/CORS configuration before CORS verification.
+- Frontend type and API client before health service.
 - Health service before `useHealthStatus`.
 - Hook before app integration.
-- README command updates after scripts and files exist.
+- README/quickstart command updates after scripts and files exist.
 
 ### Parallel Opportunities
 
-- T004 and T005 can run in parallel after root structure exists.
-- T012, T013, T017, and T018 can run in parallel because they create separate placeholder structures.
-- T020, T021, and T022 can run in parallel for US1 tests/documentation.
-- T028, T029, and T030 can run in parallel for US2 tests.
-- T031, T034, and T035 can run in parallel because they touch independent backend/frontend files.
-- T045 through T052 can run in parallel where the local environment supports concurrent validation commands.
+- T004 and T005 can run in parallel after T001.
+- T013, T014, T015, T022, and T023 can run in parallel because they touch independent structures.
+- T025, T026, and T027 can run in parallel for US1.
+- T039 and T040 can run in parallel after backend health tests are defined because they touch separate frontend test files.
+- T041, T046, and T047 can run in parallel because they touch independent backend/frontend files.
+- T063 through T069 can run in parallel where local machine resources allow separate validation commands.
 
 ---
 
 ## Parallel Example: User Story 1
 
 ```bash
-Task: "T020 [P] [US1] Add backend application context test in lancarme-api/src/test/java/br/com/lancarme/LancarmeApplicationTest.java"
-Task: "T021 [P] [US1] Add Docker Compose validation instructions to README.md"
-Task: "T022 [P] [US1] Add frontend smoke render test in lancarme-web/src/tests/App.test.tsx"
+Task: "T025 [P] [US1] Add backend application context test in lancarme-api/src/test/java/br/com/lancarme/LancarmeApplicationTest.java"
+Task: "T026 [P] [US1] Add frontend smoke render test for the PT-BR technical app shell in lancarme-web/src/tests/App.test.tsx"
+Task: "T027 [P] [US1] Add Docker Compose validation instructions to README.md"
 ```
 
 ---
@@ -191,9 +229,8 @@ Task: "T022 [P] [US1] Add frontend smoke render test in lancarme-web/src/tests/A
 ## Parallel Example: User Story 2
 
 ```bash
-Task: "T028 [P] [US2] Add backend MockMvc test for GET /api/v1/health in lancarme-api/src/test/java/br/com/lancarme/health/HealthControllerTest.java"
-Task: "T029 [P] [US2] Add frontend health service tests in lancarme-web/src/tests/healthService.test.ts"
-Task: "T030 [P] [US2] Add frontend app tests in lancarme-web/src/tests/App.test.tsx"
+Task: "T039 [P] [US2] Add frontend health service tests in lancarme-web/src/tests/healthService.test.ts"
+Task: "T040 [P] [US2] Add frontend app tests in lancarme-web/src/tests/App.test.tsx"
 ```
 
 ---
@@ -201,8 +238,9 @@ Task: "T030 [P] [US2] Add frontend app tests in lancarme-web/src/tests/App.test.
 ## Parallel Example: User Story 3
 
 ```bash
-Task: "T040 [P] [US3] Add scope guard checklist to README.md"
-Task: "T045 [P] Update README.md with final repository tree"
+Task: "T054 [P] [US3] Add scope guard checklist to README.md"
+Task: "T056 [P] [US3] Ensure backend future domain packages contain no business rules"
+Task: "T057 [P] [US3] Ensure frontend future module directories contain no business rules"
 ```
 
 ---
@@ -211,23 +249,24 @@ Task: "T045 [P] Update README.md with final repository tree"
 
 ### MVP First (User Story 1 Only)
 
-1. Complete Phase 1: Setup.
-2. Complete Phase 2: Foundational.
-3. Complete Phase 3: User Story 1.
-4. Stop and validate local startup documentation from `README.md`.
+1. Complete Phase 1: Setup & Infra.
+2. Complete Phase 2: Backend Foundation.
+3. Complete Phase 3: Frontend Foundation.
+4. Complete Phase 4: User Story 1.
+5. Stop and validate local startup documentation from `README.md`.
 
 ### Incremental Delivery
 
-1. Setup + Foundational creates the monorepo, backend base, frontend base, PostgreSQL, Flyway, env examples, and test harnesses.
+1. Setup + backend/frontend foundation creates monorepo, PostgreSQL, Flyway, env examples, and test harnesses.
 2. US1 makes the local base runnable.
-3. US2 proves the first typed web/API contract with healthcheck.
+3. US2 proves the first typed web/API contract, liveness semantics, CORS guard, and frontend states.
 4. US3 verifies the scope stays limited to platform foundation.
-5. Polish runs all validations and aligns README/quickstart.
+5. Documentation & Validation aligns README/quickstart and records command results.
 
 ### Scope Guard
 
 - Do not implement auth, login, JWT, roles, workspace membership, billing, payments, webhooks, AI providers, prompt registry, credit ledger, upload, storage, dashboard, analytics, or product modules.
 - Keep the only backend endpoint as `GET /api/v1/health`.
 - Keep the only frontend screen as a technical PT-BR status screen.
-- Keep `.env.example` values as local placeholders only.
-
+- Keep `.env.example` values as placeholders or local-only defaults.
+- Keep Playwright as a documented future E2E decision only; do not install, configure, script, or create Playwright tests in this block.

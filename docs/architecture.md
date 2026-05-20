@@ -179,6 +179,8 @@ lancarme-web/src/
 
 A API será REST versionada:
 
+> Nota de escopo: os endpoints abaixo representam a visão futura do produto. No Bloco 1 — Platform Foundation, o único endpoint de API a implementar é `GET /api/v1/health`. Auth, billing, IA real, upload, dashboard real e módulos de negócio não pertencem ao Bloco 1.
+
 ```txt
 /api/v1/auth
 /api/v1/workspaces

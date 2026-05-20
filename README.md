@@ -75,15 +75,20 @@ O projeto será desenvolvido com frontend e backend separados.
 
 ## Arquitetura inicial
 
-A estrutura prevista do projeto é:
+A estrutura principal esperada para a fundação técnica é:
 
+```txt
 lancarme/
   lancarme-web/   # Frontend React + TypeScript
   lancarme-api/   # Backend Java + Spring Boot
   docs/           # Documentação técnica e de produto
   specs/          # Especificações das funcionalidades
-  checklists/     # Checklists de QA, segurança, LGPD e deploy
-  contracts/      # Contratos de API
+  docker-compose.yml
+  AGENTS.md
+  README.md
+```
+
+Checklists e contratos de API podem existir como documentação auxiliar dentro de `specs/`, mas não fazem parte da estrutura mínima principal exigida para o Bloco 1.
 
 ## Segurança e LGPD
 

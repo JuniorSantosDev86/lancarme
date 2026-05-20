@@ -8,6 +8,14 @@
 
 **Input**: User description: "Criar a fundacao tecnica inicial do Lancar.me, sem implementar funcionalidades de negocio. A specification deve cobrir monorepo, lancarme-web com React + TypeScript + Vite, lancarme-api com Java 21 + Spring Boot 3, PostgreSQL via Docker Compose, Flyway configurado, endpoint GET /api/v1/health, frontend exibindo status da API, .env.example para frontend e backend, testes minimos no backend e frontend, README com comandos de execucao e estrutura preparada para modulos futuros. Nao implementar auth, billing, IA real, upload, modulos de produto ou dashboard real."
 
+## Clarifications
+
+### Session 2026-05-20
+
+- Q: Como a web local em Vite deve chamar a API em outra origem durante desenvolvimento? → A: Configurar CORS apenas para `http://localhost:5173` no perfil local, permitindo `GET /api/v1/health`.
+- Q: Qual ferramenta E2E deve ser adotada como padrao futuro? → A: Playwright como ferramenta E2E padrao futura, sem instalar ou configurar neste bloco.
+- Q: O endpoint `GET /api/v1/health` deve consultar o PostgreSQL? → A: Nao; confirma apenas que a API esta de pe e nao consulta PostgreSQL.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Iniciar o ambiente base local (Priority: P1)
@@ -59,6 +67,8 @@ Como mantenedor do produto, quero que o bloco prepare a estrutura modular futura
 - O banco local pode ainda nao estar pronto quando a API iniciar; o README deve orientar a ordem de execucao e troubleshooting basico.
 - Variaveis de ambiente podem estar ausentes; os exemplos devem deixar claro quais valores sao esperados para execucao local.
 - O healthcheck nao deve depender de usuario autenticado, workspace, billing, IA, upload ou dado privado.
+- O healthcheck nao deve consultar PostgreSQL; prontidao do banco deve ser validada por Docker Compose, startup da API/Flyway e troubleshooting documentado.
+- Durante desenvolvimento local, a API deve aceitar chamadas do frontend apenas a partir de `http://localhost:5173` no perfil local, sem usar CORS wildcard.
 - Configuracoes de exemplo nao podem expor secrets, tokens, senhas reais ou endpoints privados.
 
 ## Requirements *(mandatory)*
@@ -83,6 +93,9 @@ Como mantenedor do produto, quero que o bloco prepare a estrutura modular futura
 - **FR-016**: O bloco MUST NOT implementar autenticacao completa, billing, IA real, upload, pagamentos, dashboard real ou modulos de produto.
 - **FR-017**: O bloco MUST NOT incluir secrets reais, tokens privados, chaves de provedores ou dados sensiveis versionados.
 - **FR-018**: O backend MUST NOT expor entidades de dominio como DTO publico neste bloco; qualquer resposta publica deve usar contrato proprio e minimo.
+- **FR-019**: O backend MUST configurar CORS no perfil local para permitir chamadas do frontend em `http://localhost:5173` ao endpoint `GET /api/v1/health`, sem usar wildcard `*`.
+- **FR-020**: O bloco MUST NOT instalar ou configurar E2E; Playwright fica definido apenas como ferramenta E2E padrao futura.
+- **FR-021**: `GET /api/v1/health` MUST funcionar como liveness da aplicacao e MUST NOT consultar PostgreSQL ou retornar estado de infraestrutura.
 
 ### Key Entities
 
@@ -110,6 +123,7 @@ Como mantenedor do produto, quero que o bloco prepare a estrutura modular futura
 - Flyway deve estar configurado como mecanismo de migracao, mas migracoes de dominio pertencem a blocos futuros.
 - A estrutura modular pode conter diretorios ou pacotes vazios/placeholder apenas quando isso ajudar organizacao futura sem criar regra de negocio.
 - As validacoes esperadas para este bloco sao as minimas de fundacao: testes automatizados basicos, build/lint/typecheck quando aplicavel e validacao do Docker Compose.
+- Playwright sera a ferramenta E2E padrao futura, mas nao sera instalado ou configurado neste bloco por nao haver fluxo real de produto.
 
 ## Out of Scope
 
