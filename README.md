@@ -2,142 +2,258 @@
 
 O **Lançar.me** é uma plataforma SaaS para ajudar infoprodutores, mentores, experts, coprodutores, agências e profissionais de marketing digital a planejarem, criarem e organizarem lançamentos digitais com apoio de inteligência artificial.
 
-A ideia do projeto é centralizar em um só lugar partes importantes de uma operação de lançamento, como estratégia, conteúdo, copy, criativos, tráfego, funil, calendário, métricas, acompanhamento pós-venda e provas sociais.
+Este repositório está no **Bloco 1 — Platform Foundation**. O objetivo deste bloco é manter uma base local executável e verificável, sem funcionalidades de negócio.
 
-## Objetivo do projeto
+## Pré-requisitos
 
-O objetivo do Lançar.me é transformar uma ideia ou produto digital em uma campanha mais organizada, com processos claros e materiais bem estruturados.
+- Java 21
+- Maven ou Maven Wrapper funcional
+- Node.js LTS
+- npm
+- Docker
+- Docker Compose
+- Git
 
-A plataforma deve ajudar o usuário a:
+## Estrutura
 
-- estruturar produto, avatar e oferta;
-- planejar lançamentos digitais;
-- criar conteúdos para diferentes fases do funil;
-- gerar copy para páginas, anúncios, e-mails e WhatsApp;
-- organizar criativos e ideias de campanha;
-- planejar tráfego pago;
-- acompanhar tarefas e prazos;
-- registrar métricas do lançamento;
-- acompanhar alunos ou clientes no pós-venda;
-- armazenar provas sociais para campanhas futuras.
+```txt
+lancarme/
+  lancarme-web/       # Frontend React + TypeScript + Vite
+  lancarme-api/       # Backend Java 21 + Spring Boot 3
+  docs/               # Documentação técnica e de produto
+  specs/              # Especificações Spec Kit
+  docker-compose.yml  # PostgreSQL local
+  AGENTS.md
+  README.md
+```
 
-## Módulos previstos
+## Arquivos de ambiente
 
-O produto será dividido em módulos, entre eles:
+Copie os exemplos antes de executar cada aplicação:
 
-- **Command Center:** painel principal da operação;
-- **Strategy Core:** produto, avatar, promessa e oferta;
-- **Launch Room:** planejamento do lançamento;
-- **ConteúdoMatriz:** geração e reaproveitamento de conteúdo;
-- **Copy Room:** criação de textos de venda;
-- **Creative Room:** ideias, briefings e ângulos de criativos;
-- **Traffic Room:** planejamento de tráfego e campanhas;
-- **Funnel Map:** organização dos ativos do funil;
-- **Calendar & Execution:** tarefas, prazos e execução;
-- **MentorFlow:** acompanhamento pós-venda;
-- **Proof Vault:** organização de depoimentos e provas sociais;
-- **Analytics:** métricas, diagnósticos e relatórios.
+```bash
+cp .env.example .env
 
-## Stack principal
+cd lancarme-api
+cp .env.example .env
 
-O projeto será desenvolvido com frontend e backend separados.
+cd ../lancarme-web
+cp .env.example .env
+```
+
+Os arquivos `.env` reais são ignorados pelo Git. Os `.env.example` usam apenas placeholders locais seguros e não devem conter secrets reais, tokens privados ou endpoints sensíveis.
+
+Backend:
+
+```env
+SPRING_PROFILES_ACTIVE=local
+SERVER_PORT=8080
+DATABASE_URL=jdbc:postgresql://localhost:5432/lancarme
+DATABASE_USERNAME=lancarme_local
+DATABASE_PASSWORD=changeme_local_only
+APP_VERSION=0.1.0
+```
+
+Frontend:
+
+```env
+VITE_API_BASE_URL=http://localhost:8080/api/v1
+```
+
+Compose local:
+
+```env
+POSTGRES_HOST_PORT=5432
+```
+
+O padrão do PostgreSQL local é publicar `127.0.0.1:5432`. Se a porta `5432` já estiver ocupada, copie `.env.example` para `.env` na raiz e altere `POSTGRES_HOST_PORT` para `5433` ou `15432`.
+
+## PostgreSQL Local
+
+Validar o Compose:
+
+```bash
+docker compose config
+```
+
+Iniciar somente o banco local:
+
+```bash
+docker compose up -d postgres
+docker compose ps
+```
+
+O serviço se chama `postgres`, usa porta interna `5432`, publica por padrão `127.0.0.1:5432`, usa volume nomeado e mantém healthcheck com `pg_isready`.
+
+Se a porta local `5432` estiver ocupada, use uma porta alternativa:
+
+```bash
+POSTGRES_HOST_PORT=5433 docker compose up -d postgres
+```
+
+Nesse caso, o backend precisa apontar `DATABASE_URL` para a mesma porta local:
+
+```env
+DATABASE_URL=jdbc:postgresql://localhost:5433/lancarme
+```
+
+## Backend
+
+```bash
+cd lancarme-api
+cp .env.example .env
+./mvnw spring-boot:run
+```
+
+A API fica disponível em:
+
+```txt
+http://localhost:8080
+```
+
+Healthcheck manual:
+
+```bash
+curl http://localhost:8080/api/v1/health
+```
+
+Resposta esperada:
+
+```json
+{
+  "status": "UP",
+  "service": "lancarme-api",
+  "version": "0.1.0"
+}
+```
+
+Esse endpoint é **liveness da aplicação**. Ele não consulta PostgreSQL, não retorna readiness de infraestrutura e não expõe hostname, IP, datasource, workspace, usuário, secrets ou detalhes internos.
+
+## Frontend
+
+```bash
+cd lancarme-web
+cp .env.example .env
+npm install
+npm run dev
+```
+
+A aplicação web fica disponível em:
+
+```txt
+http://localhost:5173
+```
+
+A tela inicial é técnica, em PT-BR, e exibe estados de carregamento, API operacional e API indisponível consumindo `GET /api/v1/health`.
+
+## CORS Local
+
+No perfil `local`, a API permite CORS somente para:
+
+```txt
+http://localhost:5173
+```
+
+O CORS é restrito ao `GET /api/v1/health`. Não usar wildcard `*`.
+
+## Testes e Build
+
+Backend:
+
+```bash
+cd lancarme-api
+./mvnw test
+./mvnw verify
+```
+
+Frontend:
+
+```bash
+cd lancarme-web
+npm run lint
+npm run typecheck
+npm run test
+npm run build
+```
+
+Integração local:
+
+```bash
+docker compose config
+```
+
+## Troubleshooting
+
+### PostgreSQL e Flyway
+
+Se a API falhar ao iniciar por banco indisponível:
+
+```bash
+docker compose ps
+docker compose logs postgres
+docker compose up -d postgres
+```
+
+Depois reinicie a API para que o Flyway valide/aplique as migrations locais.
+
+### Healthcheck
+
+Se `curl http://localhost:8080/api/v1/health` falhar, valide se a API está rodando na porta `8080`. O endpoint de health da API não testa PostgreSQL; problemas de banco devem ser tratados pelos comandos de Docker Compose, pelo healthcheck `pg_isready` do container e pelos logs de startup/Flyway.
 
 ### Frontend
+
+Se a tela web não conseguir consultar a API, confirme:
+
+- frontend em `http://localhost:5173`;
+- `VITE_API_BASE_URL=http://localhost:8080/api/v1`;
+- backend em `http://localhost:8080`;
+- CORS local sem wildcard, permitindo somente `http://localhost:5173`.
+
+## Escopo Atual
+
+Superfície pública do Bloco 1:
+
+- `GET /api/v1/health`;
+- tela inicial técnica em PT-BR exibindo o status da API.
+
+Este bloco confirma que não há:
+
+- auth, login, JWT, RBAC ou workspace real;
+- billing, pagamentos ou webhooks;
+- IA real, provider, prompt registry ou ledger de créditos;
+- upload, storage ou arquivos privados;
+- dashboard real;
+- endpoints de módulos de produto;
+- Playwright instalado, configurado ou executado.
+
+Playwright fica registrado apenas como decisão futura para E2E quando houver fluxo real de produto.
+
+## Stack Principal
+
+Frontend:
 
 - React
 - TypeScript
 - Vite
 - Tailwind CSS
-- shadcn/ui ou Radix UI
 - TanStack Query
-- React Hook Form
-- Zod
+- Vitest
+- React Testing Library
 
-### Backend
+Backend:
 
 - Java 21
 - Spring Boot 3
+- Spring Web
 - Spring Security
 - Spring Data JPA
 - PostgreSQL
 - Flyway
-- JUnit
+- Bean Validation
+- JUnit 5
+- Mockito
 - Testcontainers
-
-### Infraestrutura
-
-- Docker
-- Docker Compose
-- VPS Linux
-- Cloudflare
-- Storage compatível com S3/R2
-- CI/CD futuramente
-
-## Arquitetura inicial
-
-A estrutura principal esperada para a fundação técnica é:
-
-```txt
-lancarme/
-  lancarme-web/   # Frontend React + TypeScript
-  lancarme-api/   # Backend Java + Spring Boot
-  docs/           # Documentação técnica e de produto
-  specs/          # Especificações das funcionalidades
-  docker-compose.yml
-  AGENTS.md
-  README.md
-```
-
-Checklists e contratos de API podem existir como documentação auxiliar dentro de `specs/`, mas não fazem parte da estrutura mínima principal exigida para o Bloco 1.
-
-## Segurança e LGPD
-
-O projeto será construído com atenção a segurança, privacidade e LGPD desde o início.
-
-Alguns princípios importantes:
-
-- autenticação e autorização no backend;
-- isolamento de dados por workspace;
-- validação server-side;
-- controle de permissões;
-- logs de auditoria;
-- controle de créditos de IA;
-- arquivos privados por padrão;
-- cuidado com dados pessoais e provas sociais;
-- documentação de decisões técnicas.
-
-## Inteligência Artificial
-
-A IA será usada como apoio para gerar e organizar materiais de lançamento, como:
-
-- planos de campanha;
-- conteúdos;
-- copies;
-- criativos;
-- diagnósticos;
-- relatórios;
-- sugestões de melhoria.
-
-O uso da IA será controlado por créditos, evitando consumo ilimitado e mantendo previsibilidade de custo.
-
-## Status do projeto
-
-O projeto está em fase inicial de documentação, arquitetura e fundação técnica.
-
-A primeira etapa de implementação será a criação da base do projeto, incluindo:
-
-- estrutura monorepo;
-- frontend React;
-- backend Spring Boot;
-- banco PostgreSQL;
-- Docker Compose;
-- healthcheck da API;
-- tela inicial consumindo a API;
-- testes iniciais;
-- documentação básica.
 
 ## Autor
 
 Desenvolvido por **Ademir dos Santos Junior**.
-
-Projeto criado como iniciativa de produto SaaS e também como portfólio prático de desenvolvimento full stack, backend Java, frontend React, QA, DevOps, segurança e arquitetura de software.

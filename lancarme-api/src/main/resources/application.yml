@@ -1,0 +1,23 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: lancarme-api
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/lancarme}
+    username: ${DATABASE_USERNAME:lancarme_local}
+    password: ${DATABASE_PASSWORD:changeme_local_only}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+lancarme:
+  app:
+    version: ${APP_VERSION:0.1.0}
+  cors:
+    allowed-origins: []

@@ -1,6 +1,10 @@
 # Dependencies
 node_modules/
+lancarme-web/node_modules/
 target/
+lancarme-api/target/
+lancarme-api/.mvn/wrapper/apache-maven-*/
+lancarme-api/.mvn/wrapper/apache-maven-*.zip
 
 # Environment
 .env
@@ -19,13 +23,17 @@ logs/
 
 # Builds
 dist/
+lancarme-web/dist/
 build/
 coverage/
+lancarme-web/coverage/
+lancarme-api/coverage/
 
 # Java
 *.class
 *.jar
 *.war
+*.tsbuildinfo
 
 # Docker / local data
 docker-data/

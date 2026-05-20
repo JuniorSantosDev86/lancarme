@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/lancarme}
+    username: ${DATABASE_USERNAME:lancarme_local}
+    password: ${DATABASE_PASSWORD:changeme_local_only}
+  flyway:
+    enabled: true
+
+lancarme:
+  cors:
+    allowed-origins:
+      - http://localhost:5173

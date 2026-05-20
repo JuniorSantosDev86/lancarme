@@ -57,7 +57,7 @@
 - [x] CHK006 Are PostgreSQL local requirements via Docker Compose documented with safe example variables and without requiring global database installation? [Completeness, Spec §FR-004, Quickstart §Local Database]
 - [x] CHK007 Are Flyway requirements documented as migration governance for future database changes, even without business entities in this block? [Completeness, Spec §FR-005, Plan §Technical Decisions]
 - [x] CHK008 Are minimal backend and frontend test requirements documented for the healthcheck and initial status screen? [Completeness, Spec §FR-011, Spec §FR-012]
-- [ ] CHK009 Are README and quickstart documentation requirements complete for prerequisites, environment setup, database, backend, frontend, tests, build, and troubleshooting commands? [Completeness, Spec §FR-013, Quickstart §Prerequisites..Troubleshooting]
+- [X] CHK009 Are README and quickstart documentation requirements complete for prerequisites, environment setup, database, backend, frontend, tests, build, and troubleshooting commands? [Completeness, Spec §FR-013, Quickstart §Prerequisites..Troubleshooting]
 
 ## Requirement Clarity
 
@@ -108,5 +108,5 @@
 ## Ambiguities & Conflicts
 
 - [x] CHK038 Are there any remaining conflicts between "healthcheck public" and the constitution's security expectations, given that the endpoint returns no private or infrastructure data? [Conflict, Constitution §III, Spec §Assumptions, Plan §API Contract]
-- [ ] CHK039 Are there any remaining ambiguities about whether placeholder future module directories may be empty versus containing marker files only? [Ambiguity, Spec §Assumptions, Plan §Project Structure]
-- [ ] CHK040 Are there any remaining ambiguities in README/quickstart ownership, where both documents must contain real commands without diverging from each other? [Ambiguity, Spec §FR-013, Quickstart §Tests And Build]
+- [X] CHK039 Are there any remaining ambiguities about whether placeholder future module directories may be empty versus containing marker files only? [Ambiguity, Spec §Assumptions, Plan §Project Structure]
+- [X] CHK040 Are there any remaining ambiguities in README/quickstart ownership, where both documents must contain real commands without diverging from each other? [Ambiguity, Spec §FR-013, Quickstart §Tests And Build]

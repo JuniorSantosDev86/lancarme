@@ -1,6 +1,6 @@
 # Quickstart: Platform Foundation
 
-Este quickstart descreve como a futura implementacao do Bloco 1 deve ser validada. Ele nao cria frontend, backend ou scaffolding por si so.
+Este quickstart descreve como validar a implementacao do Bloco 1.
 
 ## Prerequisites
 
@@ -12,6 +12,18 @@ Este quickstart descreve como a futura implementacao do Bloco 1 deve ser validad
 - Git
 
 ## Environment
+
+Compose local:
+
+```bash
+cp .env.example .env
+```
+
+Valor local esperado:
+
+- `POSTGRES_HOST_PORT=5432`
+
+O Compose publica o PostgreSQL em `127.0.0.1:${POSTGRES_HOST_PORT:-5432}` e mantém a porta interna do container em `5432`. Se a porta local `5432` estiver ocupada, copie `.env.example` para `.env` na raiz e altere `POSTGRES_HOST_PORT` para `5433` ou `15432`.
 
 Backend:
 
@@ -46,15 +58,27 @@ Arquivos `.env` reais nao devem ser versionados. Os `.env.example` devem conter 
 
 ## Local Database
 
+Validar configuracao do Compose:
+
+```bash
+docker compose config
+```
+
 ```bash
 docker compose up -d postgres
 docker compose ps
 ```
 
-Validar configuracao do Compose:
+O padrão é usar `POSTGRES_HOST_PORT=5432`. Em caso de conflito local de porta:
 
 ```bash
-docker compose config
+POSTGRES_HOST_PORT=5433 docker compose up -d postgres
+```
+
+Se usar uma porta alternativa, o backend deve apontar `DATABASE_URL` para a mesma porta:
+
+```env
+DATABASE_URL=jdbc:postgresql://localhost:5433/lancarme
 ```
 
 ## Backend
@@ -148,7 +172,7 @@ Depois reinicie a API para permitir que Flyway valide/aplique as migrations loca
 
 ### Healthcheck
 
-Se `curl http://localhost:8080/api/v1/health` falhar, valide primeiro se a API esta rodando na porta `8080`. Esse endpoint nao testa PostgreSQL; problemas de banco devem ser investigados pelos comandos de Docker Compose e pelo startup/Flyway da API.
+Se `curl http://localhost:8080/api/v1/health` falhar, valide primeiro se a API esta rodando na porta `8080`. Esse endpoint nao testa PostgreSQL; problemas de banco devem ser investigados pelos comandos de Docker Compose, pelo healthcheck `pg_isready` do container e pelo startup/Flyway da API.
 
 ### Frontend e CORS
 

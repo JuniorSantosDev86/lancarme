@@ -1,0 +1,2 @@
+-- Platform foundation migration.
+-- Business domain tables are intentionally out of scope for Bloco 1.
