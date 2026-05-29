@@ -1,15 +1,20 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { App } from '../app/App';
+
+vi.mock('../hooks/useHealthStatus', () => ({
+  useHealthStatus: vi.fn().mockReturnValue({
+    isLoading: true,
+    isFetching: false,
+    isSuccess: false,
+    data: undefined,
+  }),
+}));
 
 function renderApp() {
   const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-    },
+    defaultOptions: { queries: { retry: false } },
   });
 
   return render(
@@ -20,49 +25,38 @@ function renderApp() {
 }
 
 describe('App', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
+  it('renderiza a identidade "Lançar.me" na sidebar', () => {
+    renderApp();
+    expect(screen.getByText('Lançar.me')).toBeInTheDocument();
   });
 
-  it('renderiza a tela técnica inicial em PT-BR', () => {
-    vi.stubGlobal('fetch', vi.fn(() => new Promise(() => undefined)));
-
+  it('renderiza a topbar com papel de banner', () => {
     renderApp();
-
-    expect(screen.getByRole('heading', { name: 'Lançar.me' })).toBeInTheDocument();
-    expect(screen.getByText('Status da API')).toBeInTheDocument();
-    expect(screen.getByText('Consultando')).toBeInTheDocument();
-    expect(screen.getByText('Aguardando resposta da API...')).toBeInTheDocument();
+    expect(screen.getByRole('banner')).toBeInTheDocument();
   });
 
-  it('mostra estado operacional quando a API responde', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          status: 'UP',
-          service: 'lancarme-api',
-          version: '0.1.0',
-        }),
-      }),
-    );
-
+  it('renderiza a área principal de conteúdo', () => {
     renderApp();
-
-    expect(await screen.findByText('Operacional')).toBeInTheDocument();
-    expect(screen.getByText('API operacional')).toBeInTheDocument();
-    expect(screen.getByText('0.1.0')).toBeInTheDocument();
+    expect(screen.getByRole('main')).toBeInTheDocument();
   });
 
-  it('mostra indisponibilidade quando a API não responde', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')));
-
+  it('renderiza o Command Center com saudação ao usuário', () => {
     renderApp();
+    expect(screen.getByText(/Olá, Gabriel!/)).toBeInTheDocument();
+  });
 
-    expect(await screen.findByText('Indisponível')).toBeInTheDocument();
-    expect(
-      screen.getByText(/Não foi possível consultar a API agora/),
-    ).toBeInTheDocument();
+  it('renderiza o ApiStatusIndicator na topbar', () => {
+    renderApp();
+    expect(screen.getByLabelText('Consultando API')).toBeInTheDocument();
+  });
+
+  it('exibe identificação de visualização demonstrativa', () => {
+    renderApp();
+    expect(screen.getByText('Visualização demonstrativa')).toBeInTheDocument();
+  });
+
+  it('não tem react-router-dom (sem BrowserRouter no DOM)', () => {
+    const { container } = renderApp();
+    expect(container.querySelector('[data-router]')).toBeNull();
   });
 });

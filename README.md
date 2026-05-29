@@ -2,7 +2,9 @@
 
 O **Lançar.me** é uma plataforma SaaS para ajudar infoprodutores, mentores, experts, coprodutores, agências e profissionais de marketing digital a planejarem, criarem e organizarem lançamentos digitais com apoio de inteligência artificial.
 
-Este repositório está no **Bloco 1 — Platform Foundation**. O objetivo deste bloco é manter uma base local executável e verificável, sem funcionalidades de negócio.
+O **Bloco 2 — Design System & App Shell** está implementado, validado e aprovado. A App Shell profissional com identidade predominantemente azul, sidebar desktop, drawer mobile, topbar e Command Center placeholder com dados 100% estáticos foi entregue e aprovada em QA visual.
+
+O próximo passo oficial é o **Bloco 3 — Database & Flyway**.
 
 ## Pré-requisitos
 
@@ -102,7 +104,7 @@ DATABASE_URL=jdbc:postgresql://localhost:5433/lancarme
 ```bash
 cd lancarme-api
 cp .env.example .env
-./mvnw spring-boot:run
+SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run
 ```
 
 A API fica disponível em:
@@ -110,6 +112,8 @@ A API fica disponível em:
 ```txt
 http://localhost:8080
 ```
+
+> **Importante — profile `local`**: o perfil `local` ativa a configuração de CORS que permite ao frontend em `http://localhost:5173` consumir o healthcheck da API. Sem esse perfil, a API responde normalmente ao `curl` e ao terminal, mas o navegador bloqueia as requisições do frontend por violação de CORS. O arquivo `.env.example` já inclui `SPRING_PROFILES_ACTIVE=local`; se copiar `.env.example` para `.env` e executar com `./mvnw spring-boot:run`, o perfil é carregado automaticamente via variável de ambiente.
 
 Healthcheck manual:
 
@@ -144,7 +148,9 @@ A aplicação web fica disponível em:
 http://localhost:5173
 ```
 
-A tela inicial é técnica, em PT-BR, e exibe estados de carregamento, API operacional e API indisponível consumindo `GET /api/v1/health`.
+A aplicação web exibe a App Shell completa do Lançar.me: sidebar azul com 15 módulos de navegação (somente Command Center ativo), topbar com indicador discreto de status da API, e o Command Center placeholder com dados estáticos e identificação de "Visualização demonstrativa".
+
+**Não há `react-router-dom` instalado neste bloco.** O Command Center é o único conteúdo ativo, renderizado diretamente sem roteador. Os módulos futuros aparecem visualmente na sidebar como itens inativos ("Em breve"), sem navegação ou páginas correspondentes.
 
 ## CORS Local
 
@@ -155,6 +161,8 @@ http://localhost:5173
 ```
 
 O CORS é restrito ao `GET /api/v1/health`. Não usar wildcard `*`.
+
+**Sem o profile `local`, o frontend exibirá "API indisponível" no `ApiStatusIndicator`** mesmo que a API esteja rodando, porque o navegador bloqueará a requisição por CORS. A forma correta de executar o backend para desenvolvimento local é sempre com `SPRING_PROFILES_ACTIVE=local`.
 
 ## Testes e Build
 
@@ -209,21 +217,44 @@ Se a tela web não conseguir consultar a API, confirme:
 - backend em `http://localhost:8080`;
 - CORS local sem wildcard, permitindo somente `http://localhost:5173`.
 
-## Escopo Atual
+## Escopo Entregue — Bloco 2 (implementado, validado e aprovado)
 
-Superfície pública do Bloco 1:
+Superfície entregue pelo Bloco 2:
 
-- `GET /api/v1/health`;
-- tela inicial técnica em PT-BR exibindo o status da API.
+- App Shell responsiva: sidebar desktop azul-navy profissional (`#16347a`), drawer mobile, topbar clara.
+- Design system predominantemente azul com tokens semânticos em `tailwind.config.ts` (paleta polida em QA visual para eliminar matiz roxa/violeta residual).
+- Command Center placeholder com dados 100% estáticos e identificação visível de "Visualização demonstrativa".
+- `ApiStatusIndicator` integrado discretamente na topbar, preservando o healthcheck do Bloco 1.
+- 15 módulos de navegação visualmente presentes na sidebar — somente Command Center ativo.
+- shadcn/ui instalado com 6 componentes: `button`, `card`, `badge`, `avatar`, `separator`, `sheet`.
+- 59 testes frontend passando (Vitest + RTL).
+- 5 testes backend passando (JUnit 5), sem alterações funcionais no backend.
+
+**QA visual aprovado**: desktop, tablet e mobile validados. Paleta azul clara, leve e profissional, coerente com o mockup aprovado em `docs/design-references/bloco-02-command-center-approved.png`.
+
+## Próximo Passo — Bloco 3
+
+O próximo bloco oficial é o **Bloco 3 — Database & Flyway**:
+
+- PostgreSQL via Docker Compose (já presente, sem Flyway ainda).
+- Flyway para migrations versionadas.
+- Models base de domínio.
+- Seed de desenvolvimento.
+- Testcontainers inicial para testes de integração com banco real.
+
+---
 
 Este bloco confirma que não há:
 
+- `react-router-dom` instalado — roteamento será adicionado no bloco em que o primeiro módulo real for implementado;
+- rotas ou páginas para módulos futuros;
 - auth, login, JWT, RBAC ou workspace real;
 - billing, pagamentos ou webhooks;
 - IA real, provider, prompt registry ou ledger de créditos;
 - upload, storage ou arquivos privados;
-- dashboard real;
-- endpoints de módulos de produto;
+- métricas ou dados reais de campanha;
+- biblioteca de gráficos (gráfico de desempenho é SVG estático);
+- mudanças funcionais no backend;
 - Playwright instalado, configurado ou executado.
 
 Playwright fica registrado apenas como decisão futura para E2E quando houver fluxo real de produto.
@@ -239,6 +270,10 @@ Frontend:
 - TanStack Query
 - Vitest
 - React Testing Library
+- shadcn/ui (Base UI + Radix)
+- lucide-react
+- clsx + tailwind-merge
+- class-variance-authority
 
 Backend:
 
