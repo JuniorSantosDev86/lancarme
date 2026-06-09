@@ -211,5 +211,5 @@ Um bloco só está pronto quando:
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-`specs/002-design-system-app-shell/plan.md`
+`specs/003-database-flyway/plan.md`
 <!-- SPECKIT END -->
